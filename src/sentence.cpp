@@ -5,6 +5,23 @@
 
 using namespace nmea;
 
+namespace {
+
+std::size_t find_last_char(const std::string& value, char target)
+{
+    for(std::size_t i = value.size(); i > 0; --i)
+    {
+        if(value[i - 1] == target)
+        {
+            return i - 1;
+        }
+    }
+
+    return std::string::npos;
+}
+
+}
+
 // CONSTRUCTOR
 sentence::sentence(const std::string& nmea_string)
 {
@@ -30,7 +47,7 @@ sentence::sentence(const std::string& nmea_string)
         {
             // No following comma found, so must be at end of the string.
             // NOTE: string is already checked to be valid, so it must have checksum.
-            read_length = nmea_string.find_last_of('*') - delimeter_index - 1;
+            read_length = find_last_char(nmea_string, '*') - delimeter_index - 1;
         }
         else
         {
@@ -67,7 +84,7 @@ bool sentence::validate(const std::string& nmea_string)
     }
     
     // Check for * character.
-    std::size_t checksum_index = nmea_string.find_last_of('*');
+    std::size_t checksum_index = find_last_char(nmea_string, '*');
     if(checksum_index == std::string::npos)
     {
         return false;
