@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.15)
 
 # Set up project.
 project(nmea
@@ -13,9 +13,14 @@ file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 # Create library.
 add_library(nmea STATIC ${sources})
+add_library(nmea::nmea ALIAS nmea)
 
 # Set include directories for internal/external use.
-target_include_directories(nmea PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(nmea
+        PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 # Generate and install package config files for CMake find_package()
 include(CMakePackageConfigHelpers)
@@ -36,10 +41,24 @@ configure_package_config_file(
 
 # 1. Install the static library target
 install(TARGETS nmea
+        EXPORT nmeaTargets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} # Typically 'lib'
 )
 
 # 2. Install the header files from your include directory
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}     # Typically 'include'
+)
+
+# 3. Install CMake package config files and exported targets
+install(EXPORT nmeaTargets
+        FILE nmeaTargets.cmake
+        NAMESPACE nmea::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nmea
+)
+
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/nmeaConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/nmeaConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nmea
 )
