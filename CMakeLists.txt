@@ -17,6 +17,21 @@ add_library(nmea STATIC ${sources})
 # Set include directories for internal/external use.
 target_include_directories(nmea PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Generate and install package config files for CMake find_package()
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/nmeaConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/nmeaConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/nmeaConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nmea
+)
+
 # --- Installation Script Rules ---
 
 # 1. Install the static library target
