@@ -5,12 +5,23 @@
 
 namespace nmea {
 
+#ifdef VOID
+#pragma push_macro("VOID")
+#undef VOID
+#define NMEA___RESTORE_VOID_MACRO
+#endif
+
 /// \brief Enumerates data status values.
 enum class status
 {
     ACTIVE = 0,     ///< Data is valid.
     VOID = 1        ///< Data is invalid.
 };
+
+#ifdef NMEA___RESTORE_VOID_MACRO
+#pragma pop_macro("VOID")
+#undef NMEA___RESTORE_VOID_MACRO
+#endif
 
 }
 
